@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:myapp/data/models/cart_model.dart';
+import 'package:myapp/data/providers/cart_provider.dart';
 import 'package:myapp/presentation/screens/cart_screen.dart';
 import 'package:myapp/presentation/screens/home_screen.dart';
 import 'package:myapp/presentation/screens/orders_screen.dart';
@@ -31,8 +31,6 @@ class _MainNavigationState extends State<MainNavigation> {
 
   @override
   Widget build(BuildContext context) {
-    final cart = Provider.of<CartModel>(context);
-
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
@@ -47,42 +45,46 @@ class _MainNavigationState extends State<MainNavigation> {
         ),
         centerTitle: true,
         actions: [
-          Stack(
-            children: [
-              IconButton(
-                icon: const Icon(Icons.shopping_bag_outlined, color: Colors.white),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const CartScreen()),
-                  );
-                },
-              ),
-              if (cart.itemCount > 0)
-                Positioned(
-                  right: 8,
-                  top: 8,
-                  child: Container(
-                    padding: const EdgeInsets.all(2),
-                    decoration: BoxDecoration(
-                      color: Colors.red,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    constraints: const BoxConstraints(
-                      minWidth: 16,
-                      minHeight: 16,
-                    ),
-                    child: Text(
-                      cart.itemCount.toString(),
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 10,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
+          Consumer<CartProvider>(
+            builder: (context, cartProvider, child) {
+              return Stack(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.shopping_bag_outlined, color: Colors.white),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const CartScreen()),
+                      );
+                    },
                   ),
-                ),
-            ],
+                  if (cartProvider.itemCount > 0)
+                    Positioned(
+                      right: 8,
+                      top: 8,
+                      child: Container(
+                        padding: const EdgeInsets.all(2),
+                        decoration: BoxDecoration(
+                          color: Colors.red,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        constraints: const BoxConstraints(
+                          minWidth: 16,
+                          minHeight: 16,
+                        ),
+                        child: Text(
+                          cartProvider.itemCount.toString(),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 10,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                ],
+              );
+            },
           ),
         ],
       ),

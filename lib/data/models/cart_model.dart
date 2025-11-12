@@ -35,9 +35,11 @@ class CartModel extends ChangeNotifier {
   }
 
   void addItem(Product product, int quantity) {
-    if (_items.containsKey(product.id)) {
+    final productId = product.id.toString();
+    
+    if (_items.containsKey(productId)) {
       _items.update(
-        product.id,
+        productId,
         (existingCartItem) => CartItem(
           id: existingCartItem.id,
           name: existingCartItem.name,
@@ -47,12 +49,17 @@ class CartModel extends ChangeNotifier {
         ),
       );
     } else {
+      // Usar un precio por defecto si no está disponible
+      final price = product.price != null 
+          ? double.tryParse(product.price!.replaceAll(r'$', '')) ?? 0.0
+          : 0.0;
+          
       _items.putIfAbsent(
-        product.id,
+        productId,
         () => CartItem(
           id: DateTime.now().toString(),
           name: product.name,
-          price: double.parse(product.price.replaceAll(r'$', '')),
+          price: price,
           imageUrl: product.imageUrl,
           quantity: quantity,
         ),
